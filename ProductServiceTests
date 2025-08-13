@@ -1,0 +1,13 @@
+public class ProductServiceTests
+{
+    [Fact]
+    public void Should_Add_Product()
+    {
+        var db = new InventoryDbContext(...);
+        var service = new ProductService(db);
+        var product = new Product { Name = "Teste", Quantity = 10 };
+
+        service.AddProduct(product);
+        Assert.True(db.Products.Any(p => p.Name == "Teste"));
+    }
+}
