@@ -53,54 +53,7 @@ Adicione o token no header: Authorization: Bearer <token>
 
 Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
-Hoje
-Desenvolva o código em . NET , C# que Desenvolva uma aplicação com arquitetura de microserviços para gerenciamento de estoque de produtos e vendas em uma plataforma de e-commerce. O sistema será composto por dois microserviços: um para gerenciar o estoque de produtos e outro para gerenciar as vendas, com comunicação entre os serviços via API Gateway. Arquitetura Proposta Microserviço 1 (Gestão de Estoque): Responsável por cadastrar produtos, controlar o estoque e fornecer informações sobre a quantidade disponível. Microserviço 2 (Gestão de Vendas): Responsável por gerenciar os pedidos e interagir com o serviço de estoque para verificar a disponibilidade de produtos ao realizar uma venda. API Gateway: Roteamento das requisições para os microserviços adequados. Este serviço atua como o ponto de entrada para todas as chamadas de API. RabbitMQ: Usado para comunicação assíncrona entre os microserviços, como notificações de vendas que impactam o estoque. Autenticação com JWT: Garantir que somente usuários autenticados possam realizar ações de vendas ou consultar o estoque. Funcionalidades Requeridas Microserviço 1 (Gestão de Estoque): Cadastro de Produtos: Adicionar novos produtos com nome, descrição, preço e quantidade em estoque. Consulta de Produtos: Permitir que o usuário consulte o catálogo de produtos e a quantidade disponível em estoque. Atualização de Estoque: O estoque deve ser atualizado quando ocorrer uma venda (integração com o Microserviço de Vendas). Microserviço 2 (Gestão de Vendas): Criação de Pedidos: Permitir que o cliente faça um pedido de venda, com a validação do estoque antes de confirmar a compra. Consulta de Pedidos: Permitir que o usuário consulte o status dos pedidos realizados. Notificação de Venda: Quando um pedido for confirmado, o serviço de vendas deve notificar o serviço de estoque sobre a redução do estoque. Comum aos dois microserviços: Autenticação via JWT: Apenas usuários autenticados podem interagir com os sistemas de vendas ou consultar o estoque. API Gateway: Usar um gateway para centralizar o acesso à API, garantindo que as requisições sejam direcionadas ao microserviço correto Contexto do Negócio A aplicação simula um sistema para uma plataforma de e-commerce, onde empresas precisam gerenciar seu estoque de produtos e realizar vendas de forma eficiente. A solução deve ser escalável e robusta, com separação clara entre as responsabilidades de estoque e vendas, utilizando boas práticas de arquitetura de microserviços. Esse tipo de sistema é comum em empresas que buscam flexibilidade e alta disponibilidade em ambientes com grande volume de transações. Requisitos Técnicos Tecnologia: .NET Core (C#) para construir as APIs. Banco de Dados: Usar Entity Framework com banco de dados relacional (SQL Server ou outro). Microserviços: Microserviço de Gestão de Estoque deve permitir cadastrar produtos, consultar estoque e atualizar quantidades. Microserviço de Gestão de Vendas deve validar a disponibilidade de produtos, criar pedidos e reduzir o estoque. Comunicação entre Microserviços: Usar RabbitMQ para comunicação assíncrona entre os microserviços, especialmente para notificar mudanças de estoque após uma venda. Autenticação: Implementar autenticação via JWT para proteger os endpoints e garantir que apenas usuários autorizados possam realizar ações. API Gateway: Usar um API Gateway para redirecionar as requisições de clientes para os microserviços corretos. Boas Práticas: Seguir boas práticas de design de API, como a utilização de RESTful APIs, tratamento adequado de exceções e validações de entrada. Critérios de Aceitação O sistema deve permitir o cadastro de produtos no microserviço de estoque. O sistema deve permitir a criação de pedidos no microserviço de vendas, com validação de estoque antes de confirmar o pedido. A comunicação entre os microserviços deve ser feita de forma eficiente usando RabbitMQ para notificações de vendas e atualizações de estoque. O sistema deve ter uma API Gateway que direcione as requisições para os microserviços corretos. O sistema deve ser seguro, com autenticação via JWT para usuários e permissões específicas para cada ação. O código deve ser bem estruturado, com separação de responsabilidades e boas práticas de POO. Desenvolva esse código essa API , obedecendo esses critérios acima, use essas tecnologias se for preciso, escreva os códigos e o passo a passo para esse desafio, Tecnologias: .NET Core, C#, Entity Framework, RESTful API, RabbitMQ (para comunicação entre microserviços), JWT (para autenticação) e banco de dados relacional. Extras Testes Unitários: Criar testes unitários para as funcionalidades principais, como cadastro de produtos e criação de pedidos. Monitoramento e Logs: Implementar monitoramento básico de logs para rastrear falhas e transações no sistema. Escalabilidade: O sistema deve ser capaz de escalar facilmente, caso seja necessário adicionar mais microserviços (ex: microserviço de pagamento ou de envio).
-Claro! Vamos construir uma aplicação em .NET Core com arquitetura de microserviços para gerenciamento de estoque e vendas, seguindo todos os requisitos que você especificou. Abaixo está o plano completo com estrutura de projeto, código essencial, tecnologias utilizadas e instruções passo a passo.
 
-🧱 Estrutura Geral da Solução
-plaintext
-ECommerceSystem/
-│
-├── ApiGateway/
-│   └── Ocelot + JWT
-│
-├── InventoryService/
-│   ├── Controllers/
-│   ├── Models/
-│   ├── Services/
-│   ├── Repositories/
-│   ├── Data/
-│   └── Program.cs
-│
-├── SalesService/
-│   ├── Controllers/
-│   ├── Models/
-│   ├── Services/
-│   ├── Repositories/
-│   ├── Data/
-│   └── Program.cs
-│
-├── Shared/
-│   └── Messaging/
-│       └── RabbitMQPublisher.cs
-│
-└── docker-compose.yml
-🚀 Passo a Passo de Implementação
-1. 🔐 Autenticação com JWT
-Crie um projeto de autenticação simples com geração de token JWT. Use Microsoft.AspNetCore.Authentication.JwtBearer.
-
-csharp
-// AuthController.cs
-[HttpPost("login")]
-public IActionResult Login([FromBody] LoginModel model)
-{
-    // Validação fictícia
-    if (model.Username == "admin" && model.Password == "123")
-    {
-        var token = GenerateJwtToken(model.Username);
-        return Ok(new { token });
-    }
-    return Unauthorized();
 }
 2. 📦 Microserviço de Estoque (InventoryService)
 a. Modelo de Produto
@@ -1255,65 +1208,19 @@ public class ProductsController : ControllerBase
 
     [HttpGet]
     public async Task<IActionResult> GetProducts() =>
-        Ok(await _context.Products.ToListAsync());
-
-    [HttpPut("{id}/decrease")]
-    public async Task<IActionResult> DecreaseStock(int id, [FromBody] int quantity)
-    {
-        var product = await _context.Products.FindAsync(id);
-        if (product == null || product.Quantity < quantity)
-            return BadRequest("Estoque insuficiente");
-
-        product.Quantity -= quantity;
-        await _context.SaveChangesAsync();
-        return Ok(product);
-    }
-}
-Me avise quando terminar essa parte e eu continuo com os arquivos do SalesService. Estamos quase lá
-
-
-
-
-
-Editar em uma página
+        Ok(await _context.itar em uma página
 Terminei
 Excelente! Agora vamos finalizar com os arquivos do microserviço de vendas: SalesService.
 
 🛒 SalesService
 Crie os seguintes diretórios dentro de SalesService:
 
-bash
-mkdir Controllers Data Messaging Models
-SalesService/Program.cs
-csharp
-var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-builder.Services.AddDbContext<SalesDbContext>(options =>
-    options.UseInMemoryDatabase("SalesDb"));
-builder.Services.AddScoped<IRabbitMQPublisher, RabbitMQPublisher>();
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
             ValidateIssuer = false,
             ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("super-secret-key"))
-        };
-    });
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-var app = builder.Build();
-app.UseSwagger();
-app.UseSwaggerUI();
-app.UseAuthentication();
-app.UseAuthorization();
-app.MapControllers();
+            IssuerSigningKey = new 
 app.Run();
 SalesService/appsettings.json
 json
@@ -1325,178 +1232,7 @@ json
   },
   "AllowedHosts": "*"
 }
-SalesService/SalesService.csproj
-xml
-<Project Sdk="Microsoft.NET.Sdk.Web">
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
-    <PackageReference Include="RabbitMQ.Client" Version="6.2.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-  </ItemGroup>
-</Project>
-SalesService/Dockerfile
-dockerfile
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
-WORKDIR /app
-EXPOSE 80
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-WORKDIR /src
-COPY . .
-RUN dotnet restore
-RUN dotnet publish -c Release -o /app/publish
-
-FROM base AS final
-WORKDIR /app
-COPY --from=build /app/publish .
-ENTRYPOINT ["dotnet", "SalesService.dll"]
-Models/Order.cs
-csharp
-public class Order
-{
-    public int Id { get; set; }
-    public int ProductId { get; set; }
-    public int Quantity { get; set; }
-    public string Status { get; set; } = "Pendente";
-}
-Data/SalesDbContext.cs
-csharp
-public class SalesDbContext : DbContext
-{
-    public SalesDbContext(DbContextOptions<SalesDbContext> options) : base(options) { }
-    public DbSet<Order> Orders { get; set; }
-}
-Messaging/RabbitMQPublisher.cs
-csharp
-public interface IRabbitMQPublisher
-{
-    void Publish(string queue, object message);
-}
-
-public class RabbitMQPublisher : IRabbitMQPublisher
-{
-    public void Publish(string queue, object message)
-    {
-        var factory = new ConnectionFactory() { HostName = "rabbitmq" };
-        using var connection = factory.CreateConnection();
-        using var channel = connection.CreateModel();
-
-        channel.QueueDeclare(queue, false, false, false, null);
-        var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
-        channel.BasicPublish("", queue, null, body);
-    }
-}
-Controllers/OrdersController.cs
-csharp
-[Authorize]
-[ApiController]
-[Route("api/orders")]
-public class OrdersController : ControllerBase
-{
-    private readonly SalesDbContext _context;
-    private readonly IRabbitMQPublisher _publisher;
-
-    public OrdersController(SalesDbContext context, IRabbitMQPublisher publisher)
-    {
-        _context = context;
-        _publisher = publisher;
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> CreateOrder(Order order)
-    {
-        var client = new HttpClient();
-        var response = await client.GetAsync("http://inventoryservice/api/products");
-        var products = JsonConvert.DeserializeObject<List<Product>>(await response.Content.ReadAsStringAsync());
-        var product = products.FirstOrDefault(p => p.Id == order.ProductId);
-
-        if (product == null || product.Quantity < order.Quantity)
-            return BadRequest("Produto indisponível");
-
-        order.Status = "Confirmado";
-        _context.Orders.Add(order);
-        await _context.SaveChangesAsync();
-
-        _publisher.Publish("order_created", new { order.ProductId, order.Quantity });
-
-        return Ok(order);
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> GetOrders() =>
-        Ok(await _context.Orders.ToListAsync());
-}
-
-public class Product
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public int Quantity { get; set; }
-}
-🐳 docker-compose.yml (na raiz do projeto)
-yaml
-version: '3.8'
-
-services:
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
-
-  inventoryservice:
-    build: ./InventoryService
-    container_name: inventoryservice
-    ports:
-      - "5001:80"
-    depends_on:
-      - rabbitmq
-
-  salesservice:
-    build: ./SalesService
-    container_name: salesservice
-    ports:
-      - "5002:80"
-    depends_on:
-      - rabbitmq
-
-  apigateway:
-    build: ./ApiGateway
-    container_name: apigateway
-    ports:
-      - "5000:80"
-    depends_on:
-      - inventoryservice
-      - salesservice
-✅ Finalizando
-Agora que você tem todos os arquivos:
-
-Faça o commit:
-
-bash
-git add .
-git commit -m "Projeto completo de microserviços para e-commerce"
-Conecte ao GitHub:
-
-bash
-git remote add origin https://github.com/seu-usuario/ecommerce-microservices.git
-git branch -M main
-git push -u origin main
-Substitua seu-usuario pelo seu nome de usuário real no GitHub.
-
-Se quiser, posso te ajudar a criar um README personalizado com instruções de uso, exemplos de requisições e tokens JWT. Deseja que eu prepare isso também?
-
-Sim pode criar
-Perfeito! Aqui está o conteúdo completo para o arquivo README.md, que você pode colocar na raiz do seu repositório ecommerce-microservices.
 
 📘 README.md
 markdown
