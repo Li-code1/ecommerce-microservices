@@ -1,0 +1,26 @@
+ECommerceSystem/
+│
+├── ApiGateway/
+│   └── Ocelot + JWT
+│
+├── InventoryService/
+│   ├── Controllers/
+│   ├── Models/
+│   ├── Services/
+│   ├── Repositories/
+│   ├── Data/
+│   └── Program.cs
+│
+├── SalesService/
+│   ├── Controllers/
+│   ├── Models/
+│   ├── Services/
+│   ├── Repositories/
+│   ├── Data/
+│   └── Program.cs
+│
+├── Shared/
+│   └── Messaging/
+│       └── RabbitMQPublisher.cs
+│
+└── docker-compose.yml
