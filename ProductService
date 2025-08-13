@@ -1,0 +1,12 @@
+public class ProductService
+{
+    private readonly ILogger<ProductService> _logger;
+
+    public ProductService(ILogger<ProductService> logger) => _logger = logger;
+
+    public void AddProduct(Product product)
+    {
+        _logger.LogInformation("Adicionando produto: {Name}", product.Name);
+        // lógica...
+    }
+}
